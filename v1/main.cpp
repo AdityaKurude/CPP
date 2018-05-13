@@ -2,6 +2,8 @@
 
 int main()
 {
+    //Scope is restricted for every test case to avoid any possible overlap between them.
+    //For extra safety variable names are used different for each test case as well.
     {
         // Test case for Iterator, front, end functionality
         Vector<int> test_vec0;
@@ -97,6 +99,13 @@ int main()
         test_vec8.push_back(obj1);
         assert(test_vec8.capacity() == (DEF_CAP -1));
         assert(test_vec8.size() == 1);
+    }
+
+    {
+        // Test case for overloaded constructors
+        Vector<testA> test_vec9(2);
+        assert(test_vec9.capacity() == (DEF_CAP-2));
+        assert(test_vec9.size() == 2);
     }
 
     cout << "SUCCESS\n";

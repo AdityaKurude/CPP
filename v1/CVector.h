@@ -4,9 +4,8 @@
 #include <iostream>
 #include <string>
 #include <cassert>
-#include <algorithm>
 #include <cstring>
-#include <vector>
+//#include <vector>
 #include <new>          // std::bad_alloc
 #include <exception>
 using namespace std;
@@ -19,18 +18,20 @@ class Vector
 public:
     typedef T * iterator;
 
+    //    Default parameterless constructor.
     Vector();
-    //    Vector(unsigned int size);
-    //    //   Vector(unsigned int size, const T & initial);
+
+    //    Constructor with size as a input
+    Vector(unsigned int size);
 
     //    copy constructor
     Vector(const Vector<T> & v);
 
     //Returns the number of elements that the container has currently allocated space for.
-    unsigned int capacity() const { return my_capacity; }
+    unsigned int capacity() const { return m_capacity; }
 
     //Returns the number of elements in the container
-    unsigned int size() const { return my_size; }
+    unsigned int size() const { return m_size; }
 
     //    Appends the given element value to the end of the container.
     //    1) The new element is initialized as a copy of value.
@@ -66,27 +67,27 @@ public:
 
 #ifdef DEBUG
     void print_vec() {
-        for(int i = 0; i < my_size;i++)
+        for(int i = 0; i < m_size;i++)
             cout<<" index = "<<i<<" val = "<<buffer[i]<<endl;
     }
 #endif
 
 private:
-    unsigned int my_size;
-    unsigned int my_capacity;
+    unsigned int m_size;
+    unsigned int m_capacity;
     T buffer[DEF_CAP];
 };
 template<class T>//
 Vector<T>::Vector():
-    my_capacity(DEF_CAP),
-    my_size(0)
+    m_capacity(DEF_CAP),
+    m_size(0)
 {
 }
 
 template<class T>
 Vector<T>::Vector(const Vector<T> & v)
 {
-    if (my_size >= DEF_CAP) {
+    if (m_size >= DEF_CAP) {
 #ifdef DEBUG
         cout<<"throw exception in copy ctor"<<endl;
 #endif
@@ -94,45 +95,51 @@ Vector<T>::Vector(const Vector<T> & v)
         return;
     }
 
-    my_size = v.my_size;
-    my_capacity = v.my_capacity;
-    for (int i = 0; i < my_size; i++)
+    m_size = v.m_size;
+    m_capacity = v.m_capacity;
+    for (int i = 0; i < m_size; i++)
         buffer[i] = v.buffer[i];
 }
 
-//template<class T>//
-//Vector<T>::Vector(unsigned int size)
-//{
-//    my_capacity = size;
-//    my_size = size;
-//    buffer = new T[size];
-//}
+template<class T>
+Vector<T>::Vector(unsigned int size)
+{
+    if (size > DEF_CAP) {
+#ifdef DEBUG
+        cout<<"throw exception in size ctor"<<endl;
+#endif
+        throw std::bad_alloc();
+        return;
+    }
+    m_capacity = (DEF_CAP - size);
+    m_size = size;
+}
 
 template<class T>
 void Vector<T>::push_back(const T & v)
 {
 #ifdef DEBUG
-    cout<<"size = "<<my_size<<endl;
+    cout<<"size = "<<m_size<<endl;
 #endif
 
-    if (my_size >= DEF_CAP) {
+    if (m_size >= DEF_CAP) {
 #ifdef DEBUG
         cout<<"throw exception push_back"<<endl;
 #endif
         throw std::bad_alloc();
         return;
     }
-    buffer [my_size++] = v;
-    my_capacity = (DEF_CAP - my_size);
+    buffer [m_size++] = v;
+    m_capacity = (DEF_CAP - m_size);
 
 #ifdef DEBUG
-    cout<<"push_back size"<<my_size<<endl;
+    cout<<"push_back size"<<m_size<<endl;
 #endif
 }
 template<class T>//
 void Vector<T>::pop_back()
 {
-    if(0 == my_size) {
+    if(0 == m_size) {
 #ifdef DEBUG
         cout<<"throw exception pop_back"<<endl;
 #endif
@@ -140,13 +147,13 @@ void Vector<T>::pop_back()
         return;
     }
 
-    my_size--;
-    my_capacity++;
+    m_size--;
+    m_capacity++;
 }
 template<class T>//
 T& Vector<T>::front()
 {
-    if(0 == my_size) {
+    if(0 == m_size) {
 #ifdef DEBUG
         cout<<"throw exception front"<<endl;
 #endif
@@ -157,19 +164,19 @@ T& Vector<T>::front()
 template<class T>//
 T& Vector<T>::back()
 {
-    if(0 == my_size) {
+    if(0 == m_size) {
 #ifdef DEBUG
         cout<<"throw exception back"<<endl;
 #endif
         throw std::runtime_error("Accessing invalid positions");
     }
-    return buffer[my_size - 1];
+    return buffer[m_size - 1];
 }
 
 template<class T>//
 T& Vector<T>::operator[](unsigned int index)
 {
-    if((index < 0) || (index == my_size)) {
+    if((index < 0) || (index == m_size)) {
 #ifdef DEBUG
         cout<<"throw exception operator []"<<endl;
 #endif
@@ -187,14 +194,14 @@ typename Vector<T>::iterator Vector<T>::begin()
 template<class T>//
 typename Vector<T>::iterator Vector<T>::end()
 {
-    return (buffer + (my_size -1));
+    return (buffer + (m_size -1));
 }
 
 template<class T>
 typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos, const T &value)
 {
     //todo : add all checks
-    //    if((index < 0) || (index == my_size))
+    //    if((index < 0) || (index == m_size))
     //        cout<<"throw exception insert"<<endl;
     typename Vector<T>::iterator itr = buffer;
     int count = 0;
@@ -205,17 +212,17 @@ typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos,
         cout<<" position = "<<count<<endl;
 #endif
     }
-    for(int index = my_size; index > count; index--) {
+    for(int index = m_size; index > count; index--) {
 #ifdef DEBUG
         cout<<"running at index = "<<index<<endl;
 #endif
         buffer[index] = buffer[index -1];
     }
     buffer[count] = value;
-    my_size++;
+    m_size++;
 
 #ifdef DEBUG
-    cout<<" final size in insert = "<<my_size<<endl;
+    cout<<" final size in insert = "<<m_size<<endl;
 #endif
 }
 
@@ -232,13 +239,13 @@ typename Vector<T>::iterator Vector<T>::erase(typename Vector<T>::iterator pos)
         cout<<" position = "<<count<<endl;
 #endif
     }
-    for(int index = count; index < my_size; index++) {
+    for(int index = count; index < m_size; index++) {
 #ifdef DEBUG
         cout<<"running at index = "<<index<<endl;
 #endif
         buffer[index] = buffer[index +1];
     }
-    my_size--;
+    m_size--;
 }
 
 class testA {
