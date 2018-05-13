@@ -1,5 +1,6 @@
-#ifndef CVECTOR_HPP
-#define CVECTOR_HPP
+#ifndef CVECTOR_H
+#define CVECTOR_H
+
 #include <iostream>
 #include <string>
 #include <cassert>
@@ -21,15 +22,15 @@ public:
     Vector();
     //    Vector(unsigned int size);
     //    //   Vector(unsigned int size, const T & initial);
-    //    Vector(const Vector<T> & v);           // copy constructor//Done
+
+    //    copy constructor
+    Vector(const Vector<T> & v);
 
     //Returns the number of elements that the container has currently allocated space for.
     unsigned int capacity() const { return my_capacity; }
 
     //Returns the number of elements in the container
     unsigned int size() const { return my_size; }
-
-    //    bool empty() const;
 
     //    Appends the given element value to the end of the container.
     //    1) The new element is initialized as a copy of value.
@@ -49,14 +50,18 @@ public:
     T & back();
 
     //    Returns a reference to the element at specified location pos. No bounds checking is performed.
-    T & operator[](unsigned int index);    // return reference to numbered element
-    //    //   Vector<T> & operator=(const Vector<T> &);
+    T & operator[](unsigned int index);
 
-    iterator begin();                      // return an iterator pointing to the first element // Done
-    iterator end();                        // return an iterator pointing to one past the last element //Done
+    //    Returns an iterator to the first element of the container.
+    iterator begin();
 
+    //    Returns an iterator to the element following the last element of the container
+    iterator end();
+
+    //    Inserts elements befor the specified position in the container
     iterator insert( iterator pos, const T& value );
 
+    //    Removes elements at specified position in the container.
     iterator erase( iterator pos );
 
 #ifdef DEBUG
@@ -78,15 +83,23 @@ Vector<T>::Vector():
 {
 }
 
-//template<class T>
-//Vector<T>::Vector(const Vector<T> & v)
-//{
-//    my_size = v.my_size;
-//    my_capacity = v.my_capacity;
-//    buffer = new T[my_size];
-//    for (int i = 0; i < my_size; i++)
-//        buffer[i] = v.buffer[i];
-//}
+template<class T>
+Vector<T>::Vector(const Vector<T> & v)
+{
+    if (my_size >= DEF_CAP) {
+#ifdef DEBUG
+        cout<<"throw exception in copy ctor"<<endl;
+#endif
+        throw std::bad_alloc();
+        return;
+    }
+
+    my_size = v.my_size;
+    my_capacity = v.my_capacity;
+    for (int i = 0; i < my_size; i++)
+        buffer[i] = v.buffer[i];
+}
+
 //template<class T>//
 //Vector<T>::Vector(unsigned int size)
 //{
@@ -98,7 +111,9 @@ Vector<T>::Vector():
 template<class T>
 void Vector<T>::push_back(const T & v)
 {
+#ifdef DEBUG
     cout<<"size = "<<my_size<<endl;
+#endif
 
     if (my_size >= DEF_CAP) {
 #ifdef DEBUG
@@ -109,8 +124,10 @@ void Vector<T>::push_back(const T & v)
     }
     buffer [my_size++] = v;
     my_capacity = (DEF_CAP - my_size);
-    cout<<"push_back size"<<my_size<<endl;
 
+#ifdef DEBUG
+    cout<<"push_back size"<<my_size<<endl;
+#endif
 }
 template<class T>//
 void Vector<T>::pop_back()
@@ -170,7 +187,7 @@ typename Vector<T>::iterator Vector<T>::begin()
 template<class T>//
 typename Vector<T>::iterator Vector<T>::end()
 {
-    return buffer + size();
+    return (buffer + (my_size -1));
 }
 
 template<class T>
@@ -184,16 +201,22 @@ typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos,
     while (itr != pos) {
         count++;
         itr++;
+#ifdef DEBUG
         cout<<" position = "<<count<<endl;
+#endif
     }
     for(int index = my_size; index > count; index--) {
+#ifdef DEBUG
         cout<<"running at index = "<<index<<endl;
+#endif
         buffer[index] = buffer[index -1];
     }
     buffer[count] = value;
     my_size++;
-    cout<<" final size in insert = "<<my_size<<endl;
 
+#ifdef DEBUG
+    cout<<" final size in insert = "<<my_size<<endl;
+#endif
 }
 
 template<class T>
@@ -205,27 +228,31 @@ typename Vector<T>::iterator Vector<T>::erase(typename Vector<T>::iterator pos)
     while (itr != pos) {
         count++;
         itr++;
+#ifdef DEBUG
         cout<<" position = "<<count<<endl;
+#endif
     }
     for(int index = count; index < my_size; index++) {
+#ifdef DEBUG
         cout<<"running at index = "<<index<<endl;
+#endif
         buffer[index] = buffer[index +1];
     }
     my_size--;
 }
 
-class A {
+class testA {
 public:
     int val;
     int val2;
-    A() {
-        cout<<"Class A ctor"<<endl;
+    testA() {
+//        cout<<"Class testA ctor"<<endl;
     }
-    A(const A& temp) {
-        cout<<" copy ctor"<<endl;
+    testA(const testA& temp) {
+//        cout<<" Clss testA copy ctor"<<endl;
     }
-    ~A() {
-        cout<<"Class A dtor"<<endl;
+    ~testA() {
+//        cout<<"Class testA dtor"<<endl;
     }
 };
 

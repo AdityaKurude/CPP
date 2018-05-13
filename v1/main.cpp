@@ -2,61 +2,102 @@
 
 int main()
 {
-    //    Vector<int> v6;
-    //    v6.push_back(100);
-    //    v6.push_back(102);
-    //    v6.push_back(102);
-    //    v6.pop_back();
-    //    v6.pop_back();
-    //    v6.pop_back();
-    //    v6.pop_back();
-    //    cout<<" front = "<<v6.front()<<endl;
-    //    cout<<" back = "<<v6.back()<<endl;
+    {
+        // Test case for Iterator, front, end functionality
+        Vector<int> test_vec0;
+        test_vec0.push_back(120);
+        test_vec0.push_back(130);
 
-    //    assert(v6.size() == 1);
-    //    assert(v6[0] == 100);
-    //    v6.push_back(101);
-    //    assert(v6.size() == 2);
-    //    assert(v6[1] == 1001);
+        auto it = test_vec0.begin();
+        assert(test_vec0[0] == *it);
+        it = test_vec0.end();
+        assert(test_vec0[1] == *it);
+    }
 
-    //    cout<<" last = "<<v6.back()<<endl;
-    //    v6.pop_back();
-    //    cout<<" last = "<<v6.back()<<endl;
+    {
+        // Test case for Insert functionality
+        Vector<int> test_vec1;
+        test_vec1.push_back(120);
+        test_vec1.push_back(130);
 
-    //    Vector<A>v7;
+        auto it = test_vec1.begin();
+        test_vec1.insert(it, 200);
+        assert(test_vec1[0] == 200);
+        it++;
+        test_vec1.insert(it, 300);
+        assert(test_vec1[0] == 200);
+        assert(test_vec1[1] == 300);
+        assert(test_vec1[2] == 120);
+        assert(test_vec1[3] == 130);
+    }
 
-    //    A obj1;
-    //    obj1.val = 4;
-    //    obj1.val2 = 5;
-    //    v7.push_back(obj1);
-    //    cout<<" value = "<<v7.back().val<<" value2 = "<<v7.back().val2<<endl;
-    //    cout<<" value = "<<v7[0].val <<" value2 = "<<v7[1].val2<<endl;
+    {
+        // Test cases for copy constructor
+        Vector<int> test_vec2;
+        test_vec2.push_back(120);
+        Vector<int> test_vec3(test_vec2);
 
-    //    vector<int> org_vec;
+        assert(test_vec3.size() == 1);
+        assert(test_vec3[0] == 120);
+    }
 
-    //    org_vec.pop_back();
-    //    cout<<" expected val = "<<org_vec.back()<<endl;
+    {
+        // String test cases
+        Vector<string> test_vec4;
+        test_vec4.push_back("string_200");
+        test_vec4.push_back("string_130");
+        assert(test_vec4[0] == "string_200");
+        assert(test_vec4[1] == "string_130");
+    }
 
-    //    org_vec.erase(it);
-    //    org_vec.print_vec();
+    {
+        // Test case for front, back and pop_back functionality
+        Vector<int> test_vec5;
+        test_vec5.push_back(120);
+        test_vec5.push_back(130);
 
-    // Test case for Insert functionality
-    Vector<int> test_vec1;
-    test_vec1.push_back(120);
-    test_vec1.push_back(130);
+        assert(test_vec5.front() == 120);
+        assert(test_vec5.back() == 130);
+        test_vec5.pop_back();
+        assert(test_vec5.back() == 120);
+    }
 
-    auto it = test_vec1.begin();
-    test_vec1.insert(it, 200);
-    assert(test_vec1[0] == 200);
-    it++;
-    test_vec1.insert(it, 300);
-    assert(test_vec1[0] == 200);
-    assert(test_vec1[1] == 300);
-    assert(test_vec1[2] == 120);
-    assert(test_vec1[3] == 130);
+    {
+        // Test case for capacity and size functionality
+        Vector<int> test_vec6;
+        assert(test_vec6.capacity() == DEF_CAP);
+        assert(test_vec6.size() == 0);
 
-    //    test_vec1.print_vec();
+        test_vec6.push_back(120);
+        test_vec6.push_back(130);
 
+        assert(test_vec6.capacity() == (DEF_CAP -2));
+        assert(test_vec6.size() == 2);
+    }
+
+    {
+        // Test case for Erase functionality
+        Vector<int> test_vec7;
+        test_vec7.push_back(120);
+        test_vec7.push_back(130);
+        assert(test_vec7.size() == 2);
+
+        auto it = test_vec7.begin();
+        test_vec7.erase(it);
+        assert(test_vec7.size() == 1);
+        assert(test_vec7[0] == 130);
+    }
+
+    {
+        // Test case for custom class object
+        Vector<testA> test_vec8;
+        assert(test_vec8.capacity() == DEF_CAP);
+        assert(test_vec8.size() == 0);
+        testA obj1;
+        test_vec8.push_back(obj1);
+        assert(test_vec8.capacity() == (DEF_CAP -1));
+        assert(test_vec8.size() == 1);
+    }
 
     cout << "SUCCESS\n";
 }
