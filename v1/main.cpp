@@ -26,7 +26,7 @@ int main()
         test_vec1.insert(it, 200);
         assert(test_vec1[0] == 200);
         it++;
-        test_vec1.insert(it, 300);
+        cout<<" iterator returned= "<<*(test_vec1.insert(it, 300))<<endl;
         assert(test_vec1[0] == 200);
         assert(test_vec1[1] == 300);
         assert(test_vec1[2] == 120);
@@ -83,11 +83,22 @@ int main()
         test_vec7.push_back(120);
         test_vec7.push_back(130);
         assert(test_vec7.size() == 2);
-
         auto it = test_vec7.begin();
         test_vec7.erase(it);
         assert(test_vec7.size() == 1);
         assert(test_vec7[0] == 130);
+
+
+        test_vec7.push_back(140);
+        test_vec7.push_back(150);
+        test_vec7.push_back(160);
+        test_vec7.push_back(170);
+        it=it+4;
+        test_vec7.erase(it);
+        assert(test_vec7.size() == 4);
+        assert(test_vec7[3] == 160);
+
+
     }
 
     {

@@ -54,10 +54,10 @@ public:
     T & operator[](unsigned int index);
 
     //    Returns an iterator to the first element of the container.
-    iterator begin();
+    iterator begin() { return m_buffer; }
 
     //    Returns an iterator to the element following the last element of the container
-    iterator end();
+    iterator end() { return (m_buffer + (m_size -1)); }
 
     //    Inserts elements befor the specified position in the container
     iterator insert( iterator pos, const T& value );
@@ -77,6 +77,9 @@ private:
     unsigned int m_capacity;
     T m_buffer[DEF_CAP];
 };
+
+// Definitions of the functions
+
 template<class T>//
 Vector<T>::Vector():
     m_capacity(DEF_CAP),
@@ -87,10 +90,7 @@ Vector<T>::Vector():
 template<class T>
 Vector<T>::Vector(const Vector<T> & v)
 {
-    if (m_size >= DEF_CAP) {
-#ifdef DEBUG
-        cout<<"throw exception in copy ctor"<<endl;
-#endif
+    if (DEF_CAP <= m_size ) {
         throw std::bad_alloc();
         return;
     }
@@ -104,10 +104,7 @@ Vector<T>::Vector(const Vector<T> & v)
 template<class T>
 Vector<T>::Vector(unsigned int size)
 {
-    if (size > DEF_CAP) {
-#ifdef DEBUG
-        cout<<"throw exception in size ctor"<<endl;
-#endif
+    if (DEF_CAP < size) {
         throw std::bad_alloc();
         return;
     }
@@ -118,14 +115,7 @@ Vector<T>::Vector(unsigned int size)
 template<class T>
 void Vector<T>::push_back(const T & v)
 {
-#ifdef DEBUG
-    cout<<"size = "<<m_size<<endl;
-#endif
-
-    if (m_size >= DEF_CAP) {
-#ifdef DEBUG
-        cout<<"throw exception push_back"<<endl;
-#endif
+    if (DEF_CAP <= m_size) {
         throw std::bad_alloc();
         return;
     }
@@ -140,9 +130,6 @@ template<class T>//
 void Vector<T>::pop_back()
 {
     if(0 == m_size) {
-#ifdef DEBUG
-        cout<<"throw exception pop_back"<<endl;
-#endif
         throw std::runtime_error("Accessing invalid positions");
         return;
     }
@@ -153,67 +140,46 @@ void Vector<T>::pop_back()
 template<class T>//
 T& Vector<T>::front()
 {
-    if(0 == m_size) {
-#ifdef DEBUG
-        cout<<"throw exception front"<<endl;
-#endif
+    if(0 == m_size)
         throw std::runtime_error("Accessing invalid positions");
-    }
+
     return m_buffer[0];
 }
 template<class T>//
 T& Vector<T>::back()
 {
-    if(0 == m_size) {
-#ifdef DEBUG
-        cout<<"throw exception back"<<endl;
-#endif
+    if(0 == m_size)
         throw std::runtime_error("Accessing invalid positions");
-    }
+
     return m_buffer[m_size - 1];
 }
 
 template<class T>//
 T& Vector<T>::operator[](unsigned int index)
 {
-    if((index < 0) || (index == m_size)) {
-#ifdef DEBUG
-        cout<<"throw exception operator []"<<endl;
-#endif
+    if((index < 0) || (index == m_size))
         throw std::runtime_error("Accessing invalid positions");
-    }
 
     return m_buffer[index];
-}
-
-template<class T>//
-typename Vector<T>::iterator Vector<T>::begin()
-{
-    return m_buffer;
-}
-template<class T>//
-typename Vector<T>::iterator Vector<T>::end()
-{
-    return (m_buffer + (m_size -1));
 }
 
 template<class T>
 typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos, const T &value)
 {
-
     typename Vector<T>::iterator itr = m_buffer;
+
+    // if the vector is full, no more insertion possible
+    if(DEF_CAP == m_size) {
+        throw std::bad_alloc();
+        return itr;
+    }
+
     int count = 0;
     while (itr != pos) {
         count++;
         itr++;
-#ifdef DEBUG
-        cout<<" position = "<<count<<endl;
-#endif
     }
     for(int index = m_size; index > count; index--) {
-#ifdef DEBUG
-        cout<<"running at index = "<<index<<endl;
-#endif
         m_buffer[index] = m_buffer[index -1];
     }
     m_buffer[count] = value;
@@ -222,28 +188,34 @@ typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos,
 #ifdef DEBUG
     cout<<" final size in insert = "<<m_size<<endl;
 #endif
+    return itr;
 }
 
 template<class T>
 typename Vector<T>::iterator Vector<T>::erase(typename Vector<T>::iterator pos)
 {
-    //todo: check out of bound and overload other erase functionality as well.
     typename Vector<T>::iterator itr = m_buffer;
+
+    if(0 == m_size) {
+        throw std::runtime_error("Accessing invalid positions");
+        return itr;
+    }
     int count = 0;
     while (itr != pos) {
         count++;
         itr++;
-#ifdef DEBUG
-        cout<<" position = "<<count<<endl;
-#endif
     }
-    for(int index = count; index < m_size; index++) {
-#ifdef DEBUG
-        cout<<"running at index = "<<index<<endl;
-#endif
-        m_buffer[index] = m_buffer[index +1];
+    // if the position to be deleted is not the last position then only move the elements
+    if(DEF_CAP > m_size) {
+        for(int index = count; index < m_size; index++) {
+            m_buffer[index] = m_buffer[index +1];
+        }
     }
     m_size--;
+#ifdef DEBUG
+    cout<<" final size in erase = "<<m_size<<endl;
+#endif
+    return itr;
 }
 
 class testA {
@@ -251,13 +223,13 @@ public:
     int val;
     int val2;
     testA() {
-//        cout<<"Class testA ctor"<<endl;
+        //        cout<<"Class testA ctor"<<endl;
     }
     testA(const testA& temp) {
-//        cout<<" Clss testA copy ctor"<<endl;
+        //        cout<<" Clss testA copy ctor"<<endl;
     }
     ~testA() {
-//        cout<<"Class testA dtor"<<endl;
+        //        cout<<"Class testA dtor"<<endl;
     }
 };
 
