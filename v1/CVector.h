@@ -10,7 +10,7 @@
 #include <exception>
 using namespace std;
 
-#define DEF_CAP 5
+#define DEF_CAP 5   // default capacity per template class object
 
 template <class T>
 class Vector
@@ -27,10 +27,10 @@ public:
     //    copy constructor
     Vector(const Vector<T> & v);
 
-    //Returns the number of elements that the container has currently allocated space for.
+    //    Returns the number of elements that the container has currently allocated space for.
     unsigned int capacity() const { return m_capacity; }
 
-    //Returns the number of elements in the container
+    //    Returns the number of elements in the container
     unsigned int size() const { return m_size; }
 
     //    Appends the given element value to the end of the container.
@@ -68,14 +68,14 @@ public:
 #ifdef DEBUG
     void print_vec() {
         for(int i = 0; i < m_size;i++)
-            cout<<" index = "<<i<<" val = "<<buffer[i]<<endl;
+            cout<<" index = "<<i<<" val = "<<m_buffer[i]<<endl;
     }
 #endif
 
 private:
     unsigned int m_size;
     unsigned int m_capacity;
-    T buffer[DEF_CAP];
+    T m_buffer[DEF_CAP];
 };
 template<class T>//
 Vector<T>::Vector():
@@ -98,7 +98,7 @@ Vector<T>::Vector(const Vector<T> & v)
     m_size = v.m_size;
     m_capacity = v.m_capacity;
     for (int i = 0; i < m_size; i++)
-        buffer[i] = v.buffer[i];
+        m_buffer[i] = v.m_buffer[i];
 }
 
 template<class T>
@@ -129,7 +129,7 @@ void Vector<T>::push_back(const T & v)
         throw std::bad_alloc();
         return;
     }
-    buffer [m_size++] = v;
+    m_buffer [m_size++] = v;
     m_capacity = (DEF_CAP - m_size);
 
 #ifdef DEBUG
@@ -159,7 +159,7 @@ T& Vector<T>::front()
 #endif
         throw std::runtime_error("Accessing invalid positions");
     }
-    return buffer[0];
+    return m_buffer[0];
 }
 template<class T>//
 T& Vector<T>::back()
@@ -170,7 +170,7 @@ T& Vector<T>::back()
 #endif
         throw std::runtime_error("Accessing invalid positions");
     }
-    return buffer[m_size - 1];
+    return m_buffer[m_size - 1];
 }
 
 template<class T>//
@@ -183,27 +183,25 @@ T& Vector<T>::operator[](unsigned int index)
         throw std::runtime_error("Accessing invalid positions");
     }
 
-    return buffer[index];
+    return m_buffer[index];
 }
 
 template<class T>//
 typename Vector<T>::iterator Vector<T>::begin()
 {
-    return buffer;
+    return m_buffer;
 }
 template<class T>//
 typename Vector<T>::iterator Vector<T>::end()
 {
-    return (buffer + (m_size -1));
+    return (m_buffer + (m_size -1));
 }
 
 template<class T>
 typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos, const T &value)
 {
-    //todo : add all checks
-    //    if((index < 0) || (index == m_size))
-    //        cout<<"throw exception insert"<<endl;
-    typename Vector<T>::iterator itr = buffer;
+
+    typename Vector<T>::iterator itr = m_buffer;
     int count = 0;
     while (itr != pos) {
         count++;
@@ -216,9 +214,9 @@ typename Vector<T>::iterator Vector<T>::insert(typename Vector<T>::iterator pos,
 #ifdef DEBUG
         cout<<"running at index = "<<index<<endl;
 #endif
-        buffer[index] = buffer[index -1];
+        m_buffer[index] = m_buffer[index -1];
     }
-    buffer[count] = value;
+    m_buffer[count] = value;
     m_size++;
 
 #ifdef DEBUG
@@ -230,7 +228,7 @@ template<class T>
 typename Vector<T>::iterator Vector<T>::erase(typename Vector<T>::iterator pos)
 {
     //todo: check out of bound and overload other erase functionality as well.
-    typename Vector<T>::iterator itr = buffer;
+    typename Vector<T>::iterator itr = m_buffer;
     int count = 0;
     while (itr != pos) {
         count++;
@@ -243,7 +241,7 @@ typename Vector<T>::iterator Vector<T>::erase(typename Vector<T>::iterator pos)
 #ifdef DEBUG
         cout<<"running at index = "<<index<<endl;
 #endif
-        buffer[index] = buffer[index +1];
+        m_buffer[index] = m_buffer[index +1];
     }
     m_size--;
 }
