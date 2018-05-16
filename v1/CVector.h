@@ -10,7 +10,7 @@
 #include <exception>
 using namespace std;
 
-#define DEF_CAP 5   // default capacity per template class object
+#define DEF_CAP 20   // default capacity per template class object
 
 template <class T>
 class Vector

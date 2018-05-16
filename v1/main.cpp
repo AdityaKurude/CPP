@@ -26,7 +26,8 @@ int main()
         test_vec1.insert(it, 200);
         assert(test_vec1[0] == 200);
         it++;
-        cout<<" iterator returned= "<<*(test_vec1.insert(it, 300))<<endl;
+        //check returned iterator
+        assert(300 == *(test_vec1.insert(it, 300)));
         assert(test_vec1[0] == 200);
         assert(test_vec1[1] == 300);
         assert(test_vec1[2] == 120);
