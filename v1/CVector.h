@@ -65,6 +65,9 @@ public:
     //    Removes elements at specified position in the container.
     iterator erase( iterator pos );
 
+    //    Implements quickSort
+    void sort();
+
 #ifdef DEBUG
     void print_vec() {
         for(int i = 0; i < m_size;i++)
@@ -73,6 +76,12 @@ public:
 #endif
 
 private:
+
+    void swap(int a, int b);
+    int partition (int low, int high);
+    void quickSort(int low, int high);
+
+
     unsigned int m_size;
     unsigned int m_capacity;
     T m_buffer[DEF_CAP];
@@ -218,6 +227,66 @@ typename Vector<T>::iterator Vector<T>::erase(typename Vector<T>::iterator pos)
     return itr;
 }
 
+template<class T>
+void Vector<T>::sort()
+{
+    quickSort(0, m_size -1);
+}
+
+// A utility function to swap two elements
+template<class T>
+void Vector<T>:: swap(int a, int b)
+{
+    T temp = m_buffer[a];
+    m_buffer[a] = m_buffer[b];
+    m_buffer[b] = temp;
+}
+
+/* This function takes last element as pivot, places
+   the pivot element at its correct position in sorted
+    array, and places all smaller (smaller than pivot)
+   to left of pivot and all greater elements to right
+   of pivot */
+template<class T>
+int Vector<T>::partition (int low, int high)
+{
+    T& pivot = m_buffer[high];    // pivot
+    int i = (low - 1);  // Index of smaller element
+
+    for (int j = low; j <= high- 1; j++)
+    {
+        // If current element is smaller than or
+        // equal to pivot
+        if (m_buffer[j] <= pivot)
+        {
+            i++;    // increment index of smaller element
+            swap(i, j);
+        }
+    }
+    swap(i + 1, high);
+    return (i + 1);
+}
+
+/* The main function that implements QuickSort
+ arr[] --> Array to be sorted,
+  low  --> Starting index,
+  high  --> Ending index */
+template<class T>
+void Vector<T>::quickSort(int low, int high)
+{
+    if (low < high)
+    {
+        /* pi is partitioning index, arr[p] is now
+           at right place */
+        int pi = partition(low, high);
+
+        // Separately sort elements before
+        // partition and after partition
+        quickSort(low, pi - 1);
+        quickSort(pi + 1, high);
+    }
+}
+
 class testA {
 public:
     int val;
@@ -225,11 +294,18 @@ public:
     testA() {
         //        cout<<"Class testA ctor"<<endl;
     }
-    testA(const testA& temp) {
-        //        cout<<" Clss testA copy ctor"<<endl;
-    }
+//    testA(const testA& temp) {
+//        //        cout<<" Clss testA copy ctor"<<endl;
+//        val = temp.val;
+//        val2 = temp.val2;
+//    }
     ~testA() {
         //        cout<<"Class testA dtor"<<endl;
+    }
+    bool operator <= (const testA& obj) {
+        if( (val <= obj.val) && (val2 <= obj.val2))
+                return true;
+    return false;
     }
 };
 
